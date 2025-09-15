@@ -37,12 +37,21 @@ ${AWS_REGION}
 text
 EOF
 
-# Sync using our dedicated profile and suppress verbose messages.
-# All other flags are optional via the `args:` directive.
-sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
-              --profile s3-sync-action \
-              --no-progress \
-              ${ENDPOINT_APPEND} $*"
+if [ "${SOURCE_DIR}" == "." -o "${SOURCE_DIR}" == "./" ]; then
+  SOURCE_DIR=""
+fi
+
+if [ -n "${SOURCE_DIR}" ]; then
+  SOURCE_DIR="${SOURCE_DIR%/}/"
+fi 
+
+for FILENAME in $(git diff --name-only HEAD~ HEAD | grep "^${SOURCE_DIR}")
+do
+  sh -c "aws s3 sync ${FILENAME} s3://${AWS_S3_BUCKET}/${DEST_DIR}/${FILENAME} \
+    --profile s3-sync-action \
+    --no-progress \
+    ${ENDPOINT_APPEND} $*"
+done
 
 # Clear out credentials after we're done.
 # We need to re-run `aws configure` with bogus input instead of
