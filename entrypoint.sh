@@ -44,7 +44,7 @@ git reset -q
 file_list=$(mktemp)
 
 git diff --name-status origin/live h.almutawa-patch-1 | grep -E ".\t${SOURCE_DIR}" > ${file_list}
-cat ${file_list} | grep -v ^D | awk -F'\t' '{print "git restore --source=HEAD --staged --worktree \"" $2 "\""}' | sh -x
+cat ${file_list} | grep -v ^D | awk -F'\t' '{print "git restore --source=h.almutawa-patch-1 --staged --worktree \"" $2 "\""}' | sh -x
 
 # Create a dedicated profile for this action to avoid conflicts
 # with past/future actions.
