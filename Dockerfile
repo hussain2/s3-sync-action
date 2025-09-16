@@ -13,8 +13,10 @@ LABEL maintainer="Jake Jarvis <jake@jarv.is>"
 # https://github.com/aws/aws-cli/blob/master/CHANGELOG.rst
 ENV AWSCLI_VERSION='1.18.14'
 
-RUN apk install git \
-    && pip install --quiet --no-cache-dir awscli==${AWSCLI_VERSION}
+RUN apk update \
+    && apk add --no-cache git \
+    && pip install --quiet --no-cache-dir awscli==${AWSCLI_VERSION} \
+    && rm -rf /var/cache/apk/*
 
 ADD entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
