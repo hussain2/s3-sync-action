@@ -56,10 +56,11 @@ EOF
 
 for FILENAME in $(echo ${file_list} | awk '{print $2}')
 do
-  sh -c "aws s3 sync ${FILENAME} s3://${AWS_S3_BUCKET}/${DEST_DIR}/${FILENAME} \
+  aws s3 sync "${SOURCE_DIR}" "s3://${AWS_S3_BUCKET}/${DEST_DIR}/"
+    --exclude='*' --include="${FILENAME}"\
     --profile s3-sync-action \
     --no-progress \
-    ${ENDPOINT_APPEND} $*"
+    ${ENDPOINT_APPEND} $*
 done
 
 # Clear out credentials after we're done.
