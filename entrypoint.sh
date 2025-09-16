@@ -71,7 +71,7 @@ for FILENAME in $(cat ${file_list} | grep ^D | awk -F'\t' '{print $2}')
 do
   set -x
   aws s3 rm "s3://${AWS_S3_BUCKET}/${FILENAME}" \
-    --profile s3-sync-action --endpoint-url ${AWS_S3_ENDPOINT} $*
+    --profile s3-sync-action --endpoint-url ${AWS_S3_ENDPOINT}
   set +x
 done
 
