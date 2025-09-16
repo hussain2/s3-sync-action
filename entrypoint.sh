@@ -34,9 +34,7 @@ fi
 if [ -n "${SOURCE_DIR}" ]; then
   SOURCE_DIR="${SOURCE_DIR%/}/"
 fi 
-df -h
-pwd
-set -x
+
 git fetch --depth=1 --filter=blob:none origin h.almutawa-patch-1:h.almutawa-patch-1
 git fetch --depth=1 --filter=blob:none origin live:live
 git symbolic-ref HEAD refs/heads/h.almutawa-patch-1
@@ -53,10 +51,10 @@ ${AWS_SECRET_ACCESS_KEY}
 ${AWS_REGION}
 text
 EOF
-
+env
 for FILENAME in $(echo ${file_list} | awk '{print $2}')
 do
-  aws s3 sync "${SOURCE_DIR}" "s3://${AWS_S3_BUCKET}/${DEST_DIR}/"
+  aws s3 sync "${SOURCE_DIR%/}" "s3://${AWS_S3_BUCKET}/${DEST_DIR}/"
     --exclude='*' --include="${FILENAME}"\
     --profile s3-sync-action \
     --no-progress \
