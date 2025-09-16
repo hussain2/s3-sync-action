@@ -42,7 +42,7 @@ fi
 if [ -n "${DIST_DIR}" ]; then
   DIST_DIR="${DIST_DIR%/}/"
 fi
-
+set -x
 SYNCED_TAG="${AWS_S3_BUCKET}__${DIST_DIR%/}"
 
 if [ -z "$(git tag -l ${SYNCED_TAG})" ]; then
