@@ -33,14 +33,18 @@ fi
 
 if [ -n "${SOURCE_DIR}" ]; then
   SOURCE_DIR="${SOURCE_DIR%/}/"
-fi 
+fi
+
 
 git fetch --depth=1 --filter=blob:none origin h.almutawa-patch-1:h.almutawa-patch-1
 git fetch --depth=1 --filter=blob:none origin live:live
 git symbolic-ref HEAD refs/heads/h.almutawa-patch-1
 git reset -q
-file_list=$(git diff --name-status origin/live h.almutawa-patch-1 | grep -E ".\t${SOURCE_DIR}") 
-echo ${file_list} | grep -v ^D | awk -F'\t' '{print "git restore --source=HEAD --staged --worktree \"" $2 "\""}' | sh -x
+
+file_list=$(mktemp)
+
+git diff --name-status origin/live h.almutawa-patch-1 | grep -E ".\t${SOURCE_DIR}" > ${file_list}
+cat ${file_list} | grep -v ^D | awk -F'\t' '{print "git restore --source=HEAD --staged --worktree \"" $2 "\""}' | sh -x
 
 # Create a dedicated profile for this action to avoid conflicts
 # with past/future actions.
@@ -52,7 +56,7 @@ ${AWS_REGION}
 text
 EOF
 
-for FILENAME in $(echo ${file_list} | awk '{print $2}')
+for FILENAME in $(cat ${file_list} | awk '{print -F'\t' "\"" $2 "\""}')
 do
   aws s3 sync "${SOURCE_DIR%/}" "s3://${AWS_S3_BUCKET}/${DEST_DIR}/" \
     --exclude='*' --include="${FILENAME}" \
