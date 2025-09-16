@@ -45,7 +45,7 @@ fi
 
 SYNCED_TAG="${AWS_S3_BUCKET}__${DIST_DIR%/}"
 
-if [ -n $(git tag -l "${SYNCED_TAG}") ]; then
+if [ -z $(git tag -l "${SYNCED_TAG}") ]; then
   git tag ${SYNCED_TAG} empty
   git push -f origin ${SYNCED_TAG}
 fi
