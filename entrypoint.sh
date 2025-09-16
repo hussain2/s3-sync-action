@@ -43,16 +43,18 @@ if [ -n "${DIST_DIR}" ]; then
   DIST_DIR="${DIST_DIR%/}/"
 fi
 
-BRANCH_NAME_SYNCED="${BRANCH_NAME}_synced"
+SYNCED_TAG="${AWS_S3_BUCKET}__${DIST_DIR%/}"
+
+[ $(git tag -l "${SYNCED_TAG}") ] || git tag ${SYNCED_TAG} empty
 
 git fetch --depth=1 --filter=blob:none origin ${BRANCH_NAME}:${BRANCH_NAME}
-git fetch --depth=1 --filter=blob:none origin ${BRANCH_NAME_SYNCED}:${BRANCH_NAME_SYNCED}
+git fetch --depth=1 --filter=blob:none origin ${SYNCED_TAG}:${SYNCED_TAG}
 git symbolic-ref HEAD refs/heads/${BRANCH_NAME}
 git reset -q
 
 file_list=$(mktemp)
 
-git diff --name-status origin/${BRANCH_NAME_SYNCED} ${BRANCH_NAME} | grep -E ".\t${SOURCE_DIR}" > ${file_list}
+git diff --name-status origin/${SYNCED_TAG} ${BRANCH_NAME} | grep -E ".\t${SOURCE_DIR}" > ${file_list}
 cat ${file_list} | grep -v ^D | awk -F'\t' '{print "git restore --source=${BRANCH_NAME} --staged --worktree \"" $2 "\""}' | sh -x
 
 # Create a dedicated profile for this action to avoid conflicts
@@ -97,6 +99,6 @@ text
 EOF
 
 
-git branch -C ${BRANCH_NAME} ${BRANCH_NAME_SYNCED}
-git push -f origin ${BRANCH_NAME_SYNCED}
+git tag ${SYNCED_TAG} ${BRANCH_NAME}
+git push -f origin ${SYNCED_TAG}
 
