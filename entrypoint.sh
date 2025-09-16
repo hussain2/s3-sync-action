@@ -56,6 +56,8 @@ ${AWS_REGION}
 text
 EOF
 
+IFS=$'\n'
+
 for FILENAME in $(cat ${file_list}  | grep -v ^D | awk -F'\t' '{print $2}')
 do
   set -x
@@ -66,7 +68,7 @@ do
   set +x
 done
 
-for FILENAME in $(cat ${file_list}  | grep ^D | awk -F'\t' '{print $2}')
+for FILENAME in $(cat ${file_list} | grep ^D | awk -F'\t' '{print $2}')
 do
   set -x
   aws s3 rm "s3://${AWS_S3_BUCKET}/${FILENAME}" \
