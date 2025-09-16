@@ -51,7 +51,6 @@ if ! (git fetch --depth=1 --filter=blob:none origin tag ${SYNCED_TAG}); then
 fi
 
 git fetch --depth=1 --filter=blob:none origin ${BRANCH_NAME}:${BRANCH_NAME}
-git fetch --depth=1 --filter=blob:none origin tag ${SYNCED_TAG}:${SYNCED_TAG}
 git symbolic-ref HEAD refs/heads/${BRANCH_NAME}
 git reset -q
 
