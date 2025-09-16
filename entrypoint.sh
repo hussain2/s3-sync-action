@@ -35,16 +35,17 @@ if [ -n "${SOURCE_DIR}" ]; then
   SOURCE_DIR="${SOURCE_DIR%/}/"
 fi
 
+BRANCH_NAME_SYNCED="${BRANCH_NAME}_synced"
 
-git fetch --depth=1 --filter=blob:none origin h.almutawa-patch-1:h.almutawa-patch-1
-git fetch --depth=1 --filter=blob:none origin live:live
-git symbolic-ref HEAD refs/heads/h.almutawa-patch-1
+git fetch --depth=1 --filter=blob:none origin ${BRANCH_NAME}:${BRANCH_NAME}
+git fetch --depth=1 --filter=blob:none origin ${BRANCH_NAME_SYNCED}:${BRANCH_NAME_SYNCED}
+git symbolic-ref HEAD refs/heads/${BRANCH_NAME}
 git reset -q
 
 file_list=$(mktemp)
 
-git diff --name-status origin/live h.almutawa-patch-1 | grep -E ".\t${SOURCE_DIR}" > ${file_list}
-cat ${file_list} | grep -v ^D | awk -F'\t' '{print "git restore --source=h.almutawa-patch-1 --staged --worktree \"" $2 "\""}' | sh -x
+git diff --name-status origin/live ${BRANCH_NAME} | grep -E ".\t${SOURCE_DIR}" > ${file_list}
+cat ${file_list} | grep -v ^D | awk -F'\t' '{print "git restore --source=${BRANCH_NAME} --staged --worktree \"" $2 "\""}' | sh -x
 
 # Create a dedicated profile for this action to avoid conflicts
 # with past/future actions.
@@ -90,3 +91,8 @@ null
 null
 text
 EOF
+
+
+git branch -B ${BRANCH_NAME_SYNCED} ${BRANCH_NAME}
+git push origin ${BRANCH_NAME_SYNCED}
+
