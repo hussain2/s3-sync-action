@@ -64,7 +64,7 @@ do
   aws s3 cp "${FILENAME}" "s3://${AWS_S3_BUCKET}/${FILENAME}" \
     --profile s3-sync-action \
     --no-progress \
-    ${ENDPOINT_APPEND} $*
+    --endpoint-url ${AWS_S3_ENDPOINT} $*
   set +x
 done
 
@@ -74,7 +74,7 @@ do
   aws s3 rm "s3://${AWS_S3_BUCKET}/${FILENAME}" \
     --profile s3-sync-action \
     --no-progress \
-    ${ENDPOINT_APPEND} $*
+    --endpoint-url ${AWS_S3_ENDPOINT} $*
   set +x
 done
 
