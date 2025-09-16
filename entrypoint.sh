@@ -90,5 +90,5 @@ EOF
 
 
 git branch -C ${BRANCH_NAME} ${BRANCH_NAME_SYNCED}
-git push origin ${BRANCH_NAME_SYNCED}
+git push -f origin ${BRANCH_NAME_SYNCED}
 
