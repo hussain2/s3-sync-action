@@ -27,6 +27,21 @@ if [ -n "$AWS_S3_ENDPOINT" ]; then
   ENDPOINT_APPEND="--endpoint-url $AWS_S3_ENDPOINT"
 fi
 
+if [ "${SOURCE_DIR}" == "." -o "${SOURCE_DIR}" == "./" ]; then
+  SOURCE_DIR=""
+fi
+
+if [ -n "${SOURCE_DIR}" ]; then
+  SOURCE_DIR="${SOURCE_DIR%/}/"
+fi 
+
+git fetch --depth=1 --filter=blob:none origin h.almutawa-patch-1:h.almutawa-patch-1
+git fetch --depth=1 --filter=blob:none origin live:live
+git symbolic-ref HEAD refs/heads/h.almutawa-patch-1
+git reset -q
+file_list=$(git diff --name-status origin/live h.almutawa-patch-1 | grep -P ".\t${SOURCE_DIR}") 
+echo ${file_list} | grep -v ^D | awk '{print "git restore --source=HEAD --staged --worktree " $2}' | sh
+
 # Create a dedicated profile for this action to avoid conflicts
 # with past/future actions.
 # https://github.com/jakejarvis/s3-sync-action/issues/1
@@ -37,15 +52,7 @@ ${AWS_REGION}
 text
 EOF
 
-if [ "${SOURCE_DIR}" == "." -o "${SOURCE_DIR}" == "./" ]; then
-  SOURCE_DIR=""
-fi
-
-if [ -n "${SOURCE_DIR}" ]; then
-  SOURCE_DIR="${SOURCE_DIR%/}/"
-fi 
-
-for FILENAME in $(git diff --name-only HEAD~ HEAD | grep "^${SOURCE_DIR}")
+for FILENAME in ${file_list}
 do
   sh -c "aws s3 sync ${FILENAME} s3://${AWS_S3_BUCKET}/${DEST_DIR}/${FILENAME} \
     --profile s3-sync-action \
