@@ -35,6 +35,14 @@ if [ -n "${SOURCE_DIR}" ]; then
   SOURCE_DIR="${SOURCE_DIR%/}/"
 fi
 
+if [ "${DIST_DIR}" == "." -o "${DIST_DIR}" == "./" ]; then
+  DIST_DIR=""
+fi
+
+if [ -n "${DIST_DIR}" ]; then
+  DIST_DIR="${DIST_DIR%/}/"
+fi
+
 BRANCH_NAME_SYNCED="${BRANCH_NAME}_synced"
 
 git fetch --depth=1 --filter=blob:none origin ${BRANCH_NAME}:${BRANCH_NAME}
@@ -62,7 +70,7 @@ IFS=$'\n'
 for FILENAME in $(cat ${file_list}  | grep -v ^D | awk -F'\t' '{print $2}')
 do
   set -x
-  aws s3 cp "${FILENAME}" "s3://${AWS_S3_BUCKET}/${FILENAME}" \
+  aws s3 cp "${FILENAME}" "s3://${AWS_S3_BUCKET}/${DIST_DIR}${FILENAME#${SOURCE_DIR}}" \
     --profile s3-sync-action --no-progress --endpoint-url ${AWS_S3_ENDPOINT} $*
   set +x
 done
@@ -70,7 +78,7 @@ done
 for FILENAME in $(cat ${file_list} | grep ^D | awk -F'\t' '{print $2}')
 do
   set -x
-  aws s3 rm "s3://${AWS_S3_BUCKET}/${FILENAME}" \
+  aws s3 rm "s3://${AWS_S3_BUCKET}/${DIST_DIR}${FILENAME#${SOURCE_DIR}}" \
     --profile s3-sync-action --endpoint-url ${AWS_S3_ENDPOINT}
   set +x
 done
