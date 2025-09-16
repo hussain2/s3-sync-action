@@ -45,7 +45,7 @@ fi
 set -x
 SYNCED_TAG="${AWS_S3_BUCKET}__${DIST_DIR%/}"
 
-if ! (git fetch --depth=1 --filter=blob:none origin tag ${SYNCED_TAG}); then
+if ! (git fetch --depth=1 --filter=blob:none origin tag ${SYNCED_TAG}:${SYNCED_TAG}); then
   git tag ${SYNCED_TAG} empty
   git push -f origin ${SYNCED_TAG}
 fi
@@ -56,7 +56,7 @@ git reset -q
 
 file_list=$(mktemp)
 
-git diff --name-status ${SYNCED_TAG} ${BRANCH_NAME} | grep -E ".\t${SOURCE_DIR}" > ${file_list}
+git diff --name-status refs/tags/${SYNCED_TAG} ${BRANCH_NAME} | grep -E ".\t${SOURCE_DIR}" > ${file_list}
 cat ${file_list} | grep -v ^D | awk -F'\t' '{print "git restore --source=${BRANCH_NAME} --staged --worktree \"" $2 "\""}' | sh -x
 
 # Create a dedicated profile for this action to avoid conflicts
