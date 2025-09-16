@@ -45,7 +45,10 @@ fi
 
 SYNCED_TAG="${AWS_S3_BUCKET}__${DIST_DIR%/}"
 
-[ $(git tag -l "${SYNCED_TAG}") ] || git tag ${SYNCED_TAG} empty
+if [ -n $(git tag -l "${SYNCED_TAG}") ]; then
+  git tag ${SYNCED_TAG} empty
+  git push -f origin ${SYNCED_TAG}
+fi
 
 git fetch --depth=1 --filter=blob:none origin ${BRANCH_NAME}:${BRANCH_NAME}
 git fetch --depth=1 --filter=blob:none origin ${SYNCED_TAG}:${SYNCED_TAG}
