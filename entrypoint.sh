@@ -41,7 +41,7 @@ git fetch --depth=1 --filter=blob:none origin h.almutawa-patch-1:h.almutawa-patc
 git fetch --depth=1 --filter=blob:none origin live:live
 git symbolic-ref HEAD refs/heads/h.almutawa-patch-1
 git reset -q
-file_list=$(git diff --name-status origin/live h.almutawa-patch-1 | grep -P ".\t${SOURCE_DIR}") 
+file_list=$(git diff --name-status origin/live h.almutawa-patch-1 | grep -E ".\t${SOURCE_DIR}") 
 echo ${file_list} | grep -v ^D | awk '{print "git restore --source=HEAD --staged --worktree " $2}' | sh
 
 # Create a dedicated profile for this action to avoid conflicts
