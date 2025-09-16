@@ -51,11 +51,11 @@ ${AWS_SECRET_ACCESS_KEY}
 ${AWS_REGION}
 text
 EOF
-env
+
 for FILENAME in $(echo ${file_list} | awk '{print $2}')
 do
-  aws s3 sync "${SOURCE_DIR%/}" "s3://${AWS_S3_BUCKET}/${DEST_DIR}/"
-    --exclude='*' --include="${FILENAME}"\
+  aws s3 sync "${SOURCE_DIR%/}" "s3://${AWS_S3_BUCKET}/${DEST_DIR}/" \
+    --exclude='*' --include="${FILENAME}" \
     --profile s3-sync-action \
     --no-progress \
     ${ENDPOINT_APPEND} $*
