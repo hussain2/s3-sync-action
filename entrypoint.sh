@@ -56,11 +56,20 @@ ${AWS_REGION}
 text
 EOF
 
-for FILENAME in $(cat ${file_list} | awk '{print -F'\t' "\"" $2 "\""}')
+for FILENAME in $(cat ${file_list}  | grep -v ^D | awk '{print -F'\t' "\"" $2 "\""}')
 do
   set -x
-  aws s3 sync "${SOURCE_DIR%/}" "s3://${AWS_S3_BUCKET}/${DEST_DIR}/" \
-    --exclude='*' --include="${FILENAME}" \
+  aws s3 cp "${FILENAME}" "s3://${AWS_S3_BUCKET}/${FILENAME}" \
+    --profile s3-sync-action \
+    --no-progress \
+    ${ENDPOINT_APPEND} $*
+  set +x
+done
+
+for FILENAME in $(cat ${file_list}  | grep ^D | awk '{print -F'\t' "\"" $2 "\""}')
+do
+  set -x
+  aws s3 "s3://${AWS_S3_BUCKET}/${FILENAME}" \
     --profile s3-sync-action \
     --no-progress \
     ${ENDPOINT_APPEND} $*
