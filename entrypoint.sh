@@ -45,13 +45,14 @@ fi
 set -x
 SYNCED_TAG="${AWS_S3_BUCKET}__${DIST_DIR%/}"
 
+git fetch --depth=1 --filter=blob:none origin tag ${SYNCED_TAG}
+
 if [ -z "$(git tag -l ${SYNCED_TAG})" ]; then
   git tag ${SYNCED_TAG} empty
   git push -f origin ${SYNCED_TAG}
 fi
 
 git fetch --depth=1 --filter=blob:none origin ${BRANCH_NAME}:${BRANCH_NAME}
-git fetch --depth=1 --filter=blob:none origin tag ${SYNCED_TAG}
 git symbolic-ref HEAD refs/heads/${BRANCH_NAME}
 git reset -q
 
