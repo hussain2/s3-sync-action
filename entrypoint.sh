@@ -58,12 +58,16 @@ EOF
 
 for FILENAME in $(cat ${file_list} | awk '{print -F'\t' "\"" $2 "\""}')
 do
+  set -x
   aws s3 sync "${SOURCE_DIR%/}" "s3://${AWS_S3_BUCKET}/${DEST_DIR}/" \
     --exclude='*' --include="${FILENAME}" \
     --profile s3-sync-action \
     --no-progress \
     ${ENDPOINT_APPEND} $*
+  set +x
 done
+
+rm ${file_list}
 
 # Clear out credentials after we're done.
 # We need to re-run `aws configure` with bogus input instead of
