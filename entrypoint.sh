@@ -54,7 +54,7 @@ ${AWS_REGION}
 text
 EOF
 
-for FILENAME in ${file_list}
+for FILENAME in $(echo ${file_list} | awk '{print $2}')
 do
   sh -c "aws s3 sync ${FILENAME} s3://${AWS_S3_BUCKET}/${DEST_DIR}/${FILENAME} \
     --profile s3-sync-action \
