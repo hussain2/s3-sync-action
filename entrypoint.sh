@@ -101,6 +101,6 @@ text
 EOF
 
 
-git tag ${SYNCED_TAG} ${BRANCH_NAME}
+git tag -f ${SYNCED_TAG} ${BRANCH_NAME}
 git push -f origin ${SYNCED_TAG}
 
