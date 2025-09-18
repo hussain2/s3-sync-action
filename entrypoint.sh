@@ -71,19 +71,19 @@ EOF
 
 IFS=$'\n'
 
-for FILENAME in $(cat ${file_list}  | grep -v ^D | awk -F'\t' '{print $2}')
-do
-  set -x
-  aws s3 cp "${FILENAME}" "s3://${AWS_S3_BUCKET}/${DIST_DIR}${FILENAME#${SOURCE_DIR}}" \
-    --profile s3-sync-action --no-progress --endpoint-url ${AWS_S3_ENDPOINT} $*
-  set +x
-done
-
 for FILENAME in $(cat ${file_list} | grep ^D | awk -F'\t' '{print $2}')
 do
   set -x
   aws s3 rm "s3://${AWS_S3_BUCKET}/${DIST_DIR}${FILENAME#${SOURCE_DIR}}" \
     --profile s3-sync-action --endpoint-url ${AWS_S3_ENDPOINT}
+  set +x
+done
+
+for FILENAME in $(cat ${file_list}  | grep -v ^D | awk -F'\t' '{print $2}')
+do
+  set -x
+  aws s3 cp "${FILENAME}" "s3://${AWS_S3_BUCKET}/${DIST_DIR}${FILENAME#${SOURCE_DIR}}" \
+    --profile s3-sync-action --no-progress --endpoint-url ${AWS_S3_ENDPOINT} $*
   set +x
 done
 
