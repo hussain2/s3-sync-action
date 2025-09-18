@@ -56,7 +56,7 @@ git reset -q
 
 file_list=$(mktemp)
 
-git diff --name-status refs/tags/${SYNCED_TAG} ${BRANCH_NAME} | grep -E ".\t${SOURCE_DIR}" > ${file_list}
+git diff --name-status --no-renames refs/tags/${SYNCED_TAG} ${BRANCH_NAME} | grep -E ".\t${SOURCE_DIR}" > ${file_list}
 cat ${file_list} | grep -v ^D | awk -F'\t' "{print \"git restore --source=${BRANCH_NAME} --staged --worktree \\\"\" \$2  \"\\\"\"  }" | sh -x
 
 # Create a dedicated profile for this action to avoid conflicts
